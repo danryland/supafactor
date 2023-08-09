@@ -1,11 +1,18 @@
+import SignIn from 'pages/SignIn.vue';
 
 const routes = [
+  // {
+  //   path: '/',
+  //   component: () => import('layouts/MainLayout.vue'),
+  //   children: [
+  //     { path: '', component: () => import('pages/IndexPage.vue') }
+  //   ]
+  // },
+
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
-    ]
+    alias: '/sign-in',
+    component: SignIn,
   },
 
   // Always leave this as last one,
