@@ -26,6 +26,9 @@
               text-color="dark"
               icon="fa-brands fa-github"
               label="Sign in with Github"
+              @click="signIn()"
+              :loading="isLoading"
+              :disable="isLoading"
             />
           </transition>
           <transition
@@ -54,9 +57,43 @@
   </q-layout>
 </template>
 <script>
+import { ref, onMounted } from "vue";
+import { supabase } from "../lib/supabaseClient";
+import { useRouter } from "vue-router";
+
 export default {
   setup() {
-    const isLoading = false;
+    const router = useRouter();
+    const isLoading = ref(false);
+
+    const signIn = async () => {
+      try {
+        isLoading.value = true;
+
+        const redirectTo = window.location.origin + "/dashboard";
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "github",
+          options: {
+            redirectTo: redirectTo,
+          },
+        });
+        if (error) {
+          console.error("An error occurred:", error);
+        } else {
+          console.log(data);
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred:", error);
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    return {
+      isLoading,
+      signIn,
+    };
   },
 };
 </script>
