@@ -1,7 +1,7 @@
 <template>
   <q-layout>
     <q-page-container>
-      <q-page class="flex flex-center">
+      <q-page class="flex flex-center q-pa-lg">
         <div>
           <transition appear enter-active-class="animated bounceInDown slower">
             <div class="brand">
@@ -35,7 +35,7 @@
             appear
             enter-active-class="animated fadeInUp slower delay-5s"
           >
-            <p>
+            <p class="text-center">
               Project by
               <a
                 class="text-white"
@@ -47,7 +47,7 @@
                 class="text-white"
                 target="_blank"
                 href="https://insidrmusic.com"
-                >Insidr Music</a
+                >Insidr&nbsp;Music</a
               >
             </p>
           </transition>
@@ -70,7 +70,7 @@ export default {
       try {
         isLoading.value = true;
 
-        const redirectTo = window.location.origin + "/dashboard";
+        const redirectTo = process.env.SITE_URL + "/dashboard";
 
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: "github",
