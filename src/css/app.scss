@@ -8,6 +8,9 @@ body,
   border-radius: 100px 100px;
   padding: 12px 24px;
   font-weight: 700;
+  &.q-btn--round {
+    padding: 0px;
+  }
   &.bg-primary {
     background: linear-gradient(
       180deg,

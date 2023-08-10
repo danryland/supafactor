@@ -1,8 +1,16 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header class="bg-transparent">
-      <q-toolbar class="q-pa-lg">
-        <q-toolbar-title>&nbsp;</q-toolbar-title>
+      <q-toolbar
+        class="fit row wrap justify-center items-start content-start q-pa-lg"
+      >
+        <q-toolbar-title>
+          <img
+            class="logo"
+            src="~/assets/img/logo-supafactor-small.svg"
+            alt="Does your README have the Supafactor logo"
+          />
+        </q-toolbar-title>
 
         <q-btn-dropdown
           dropdown-icon="fa-solid fa-sharp fa-chevron-down fa-xs"
@@ -36,7 +44,8 @@
       <q-page class="flex flex-center">
         <div class="text-center">
           <h1 class="hide">Dashboard</h1>
-          <div v-if="repos && repos.length >= 1">
+
+          <div v-if="!isLoading && repos && repos.length >= 1">
             <transition appear enter-active-class="animated bounceIn slower">
               <h2 class="text-h4 q-mb-lg">
                 Select your<br />
@@ -125,7 +134,8 @@
               />
             </transition>
           </div>
-          <div v-else>
+
+          <div v-if="!isLoading && repos && repos.length == 0">
             <transition appear enter-active-class="animated flip slower">
               <div class="border q-mb-md">
                 <q-avatar size="200px">
@@ -272,6 +282,11 @@ export default {
 }
 .q-btn :deep(.q-icon) {
   font-size: unset !important;
+}
+
+.logo {
+  width: auto;
+  height: 48px;
 }
 
 .border {

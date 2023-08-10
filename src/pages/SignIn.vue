@@ -5,7 +5,10 @@
         <div>
           <transition appear enter-active-class="animated bounceInDown slower">
             <div class="brand">
-              <img src="~/assets/img/brand.svg" alt="" />
+              <img
+                src="~/assets/img/brand.svg"
+                alt="Does your README have the Supafactor logo"
+              />
               <h1>
                 Does your<br />
                 README have the<br />
