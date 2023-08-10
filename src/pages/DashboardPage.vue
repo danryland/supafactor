@@ -12,7 +12,10 @@
           unelevated
         >
           <template v-slot:label>
-            <span class="q-mr-sm">{{ currentUser?.user_metadata?.name }}</span>
+            <span class="q-mr-sm">{{
+              currentUser?.user_metadata?.name ||
+              currentUser?.user_metadata?.user_name
+            }}</span>
             <q-avatar size="24px">
               <q-img :src="currentUser?.user_metadata?.avatar_url" />
             </q-avatar>
