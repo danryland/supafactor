@@ -1,5 +1,6 @@
 import SignIn from "pages/SignIn.vue";
 import DashboardPage from "pages/DashboardPage.vue";
+import ReviewPage from "pages/ReviewPage.vue";
 
 const routes = [
   {
@@ -8,8 +9,12 @@ const routes = [
     component: SignIn,
   },
   {
-    path: "/dashboard",
-    component: DashboardPage,
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "/dashboard", name: "dashboard", component: DashboardPage },
+      { path: "/review/:repo_name", name: "review", component: ReviewPage },
+    ],
   },
 
   // Always leave this as last one,

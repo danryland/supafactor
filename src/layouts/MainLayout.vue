@@ -1,116 +1,162 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="hHh lpR fFf" :class="'page-' + $route.name">
+    <q-header class="bg-transparent">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
         <q-toolbar-title>
-          Quasar App
+          <router-link to="/dashboard">
+            <img
+              class="logo"
+              src="~/assets/img/logo-supafactor-small.svg"
+              alt="Does your README have the Supafactor logo"
+            />
+          </router-link>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn-dropdown
+          dropdown-icon="fa-solid fa-sharp fa-chevron-down fa-xs"
+          no-caps
+          flat
+          rounded
+          unelevated
+        >
+          <template v-slot:label>
+            <span class="q-mr-sm">{{
+              currentUser?.user_metadata?.name ||
+              currentUser?.user_metadata?.user_name
+            }}</span>
+            <q-avatar size="24px">
+              <q-img :src="currentUser?.user_metadata?.avatar_url" />
+            </q-avatar>
+          </template>
+
+          <q-list>
+            <q-item clickable v-close-popup @click="signOut()">
+              <q-item-section>
+                <q-item-label>Sign out</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
-      <router-view />
+      <router-view
+        :currentUser="currentUser"
+        :isLoading="isLoading"
+        :repos="repos"
+        :formatDate="formatDate"
+        :submitRepo="submitRepo"
+        :addManually="addManually"
+      />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref, onMounted, getCurrentInstance } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "../lib/supabaseClient";
+import { date } from "quasar";
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+export default {
+  name: "MainLayout",
+  setup() {
+    const router = useRouter();
+    const currentUser = ref();
+    const oAuthToken = ref();
+    const isLoading = ref(false);
+    const repos = ref([]);
+    const selectedRepo = ref();
 
-export default defineComponent({
-  name: 'MainLayout',
+    const { appContext } = getCurrentInstance();
 
-  components: {
-    EssentialLink
-  },
+    const axios = appContext.config.globalProperties.$axios;
 
-  setup () {
-    const leftDrawerOpen = ref(false)
+    const getRepos = async () => {
+      const startDate = new Date("2023-08-04T09:00:00-07:00"); // 9:00 am PT on August 4th
+      const endDate = new Date("2023-08-13T23:59:00-07:00"); // 11:59 pm PT on August 13th
+      const since = startDate.toISOString();
+      const before = endDate.toISOString();
+
+      isLoading.value = true;
+
+      const response = await axios.get("https://api.github.com/user/repos", {
+        headers: {
+          Authorization: `token ${oAuthToken.value}`,
+        },
+        params: { since, before },
+      });
+
+      //console.log(response.data);
+
+      repos.value = response.data.map((repo) => ({
+        id: repo.id,
+        name: repo.name,
+        html_url: repo.html_url,
+        created_at: repo.created_at,
+      }));
+
+      isLoading.value = false;
+    };
+
+    const formatDate = (timestamp) => {
+      return date.formatDate(timestamp, "D ddd MMM YYYY");
+    };
+
+    onMounted(async () => {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("An error occurred:", error);
+        //router.push("/sign-in");
+        return;
+      }
+
+      const { provider_token, user } = data?.session || {};
+
+      if (provider_token && user) {
+        oAuthToken.value = provider_token;
+        currentUser.value = user;
+        getRepos();
+      } else {
+        //router.push("/sign-in");
+      }
+    });
+
+    const addManually = () => {
+      alert("TODO");
+    };
+
+    const submitRepo = (repoName) => {
+      console.log("Selected ID:", selectedRepo);
+      router.push(`/review/${repoName}`);
+    };
+
+    const signOut = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error(error);
+      }
+      router.push("/sign-in");
+    };
 
     return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
-})
+      currentUser,
+      signOut,
+      getRepos,
+      repos,
+      isLoading,
+      selectedRepo,
+      formatDate,
+      addManually,
+      submitRepo,
+    };
+  },
+};
 </script>
+<style lang="scss" scoped>
+.q-btn :deep(.q-icon) {
+  font-size: unset !important;
+}
+</style>
