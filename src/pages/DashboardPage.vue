@@ -33,7 +33,7 @@
       <q-page class="flex flex-center">
         <div class="text-center">
           <h1 class="hide">Dashboard</h1>
-          <div v-if="repos">
+          <div v-if="repos && repos.length >= 1">
             <transition appear enter-active-class="animated bounceIn slower">
               <h2 class="text-h4 q-mb-lg">
                 Select your<br />

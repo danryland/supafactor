@@ -75,7 +75,7 @@ export default {
       }
 
       if (data && data.session) {
-        console.log(data);
+        //console.log(data);
         router.push("/dashboard");
       }
     });
