@@ -66,25 +66,39 @@ export default {
     const router = useRouter();
     const isLoading = ref(false);
 
+    // Check if they're already logged in
+    onMounted(async () => {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("An error occurred:", error);
+      }
+
+      if (data && data.session) {
+        console.log(data);
+        router.push("/dashboard");
+      }
+    });
+
+    // Github sign in
     const signIn = async () => {
       try {
         isLoading.value = true;
 
         const redirectTo = process.env.SITE_URL + "/dashboard";
 
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        console.log(redirectTo);
+
+        const { error } = await supabase.auth.signInWithOAuth({
           provider: "github",
           options: {
+            scopes: "public_repo",
             redirectTo: redirectTo,
           },
         });
-        if (error) {
-          console.error("An error occurred:", error);
-        } else {
-          console.log(data);
-        }
+        if (error) throw error;
       } catch (error) {
-        console.error("An unexpected error occurred:", error);
+        console.logo("An unexpected error occurred:", error);
       } finally {
         isLoading.value = false;
       }
@@ -97,40 +111,10 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-$primary: #62ef24;
-
-body,
-.q-btn {
-  font-family: "Public Sans", sans-serif;
-}
-
+<style lang="scss" scoped>
 .q-layout {
-  position: relative;
   &:after {
-    z-index: -1;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    content: "";
     background-image: url("../assets/img/background-1.svg");
-    background-size: cover;
-    background-position: center center;
-    opacity: 0.5;
-  }
-}
-
-.q-page {
-  > div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
   }
 }
 
@@ -175,16 +159,5 @@ body,
     line-height: $height;
     display: block;
   }
-}
-
-.q-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(98, 239, 36, 0.92) 0%,
-    rgba(55, 151, 28, 0.92) 100%
-  ) !important;
-  border-radius: 100px 100px;
-  padding: 12px 24px;
-  font-weight: 700;
 }
 </style>
