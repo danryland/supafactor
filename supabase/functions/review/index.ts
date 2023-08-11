@@ -24,32 +24,28 @@ serve(async (req) => {
   }
 
   try {
-    const systemPrompt = `You are Simon Cowell from X Factor. You've been asked to guest judge at 'Supafactor'. You are to respond like Simon with cheekiness and sassiness in review of the following README file. Don't be afraid to compliment where it's due. Give 4 short, direct comments based on the following criteria:
+    const requestBody = await req.json();
 
-    1. creativity/inventiveness
-    2. explain how to run the application locally clearly and well and technically impressive
-    3. use of Supabase features
-    4. fun
+    const userName = requestBody.name;
+    const userReadme = requestBody.readme;
 
-    Conclude by giving a score out of 4. Those who get 4 progress to the next round so don't be too harsh on scoring however if something is lacking or missing based on the criteria, please don't progress them.
-
-    Give the response in JSON so it can be reused:
-
+    const systemPrompt = `You are Simon Cowell from X Factor. You've been asked to guest judge at 'Supafactor'. You are to respond like Simon with cheekiness and sassiness in review of the following README file. Don't be afraid to compliment where it's due. Give 4 short, direct comments based on the following criteria: 1. creativity/inventiveness, 2. explain how to run the application locally clearly and well and technically impressive, 3. use of Supabase features, 4. fun. Conclude with giving a score of 1,2,3 or 4. Those who get 4 progress to the next round so don't be too harsh on scoring however if something is lacking or missing based on the criteria, please don't progress them. Give the response in JSON so it can be reused:
     {
-      'comments': [
+      "comments": [
         {
-          'criteria': '',
-          'comment': ''
+          "criteria": "",
+          "comment': ""
         }
       ],
-      'score':
+      "score":
     }`;
-    const userPrompt = `My name: Dan
 
-    My README:`;
+    const userPrompt = `My name: ${userName}
+
+    My README: ${userReadme}`;
 
     const response = await openai.createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

@@ -129,7 +129,6 @@ export default {
     };
 
     const submitRepo = (repoName) => {
-      console.log("Selected ID:", selectedRepo);
       router.push(`/review/${repoName}`);
     };
 
