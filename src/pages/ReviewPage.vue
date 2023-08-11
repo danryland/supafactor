@@ -273,6 +273,7 @@ export default {
   background-repeat: no-repeat;
   background-position: -500% 40px;
   transition: ease-in-out 0.6s all;
+  background-size: contain;
   &.is-ready {
     background-position: center 40px;
   }
