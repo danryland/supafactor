@@ -271,7 +271,7 @@ export default {
 .q-page {
   background-image: url("../assets/img/simon_1.svg");
   background-repeat: no-repeat;
-  background-position: -500% 40px;
+  background-position: 500% 40px;
   transition: ease-in-out 0.6s all;
   background-size: contain;
   &.is-ready {
