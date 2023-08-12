@@ -16,7 +16,7 @@ export default {
     repo: String,
   },
   setup() {
-    const svgContent = ref(BadgeFail); // Default to the "fail" badge
+    const svgContent = ref(BadgeFail);
     const router = useRouter();
     const routeProps = toRefs(router.currentRoute.value.params);
 
@@ -34,17 +34,15 @@ export default {
           .single();
 
         if (error) {
-          console.error("Error fetching data:", error);
+          //console.error("Error fetching data:", error);
           return;
         }
-
-        console.log(data);
 
         if (data && data.score > 3) {
           svgContent.value = BadgePass;
         }
       } catch (err) {
-        console.error("Error:", err);
+        //console.error("Error:", err);
       }
     });
 
