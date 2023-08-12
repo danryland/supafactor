@@ -29,13 +29,16 @@ export default {
           .from("submissions")
           .select("*")
           .eq("user_name", userName.value)
-          .eq("repo_name", repo.value)
+          .eq("repo", repo.value)
+          .limit(1)
           .single();
 
         if (error) {
           console.error("Error fetching data:", error);
           return;
         }
+
+        console.log(data);
 
         if (data && data.score > 3) {
           svgContent.value = BadgePass;
