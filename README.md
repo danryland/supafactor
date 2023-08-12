@@ -2,6 +2,12 @@
 
 ## A Rick-and-Morty-Xfactor-inspired experience
 
+[PLAY: Try Supafactor for yourself](https://supafactor.netlify.app/)
+
+WATCH: Watch a demo (Coming soon)
+
+![Supafactor: Does your README have it?](./src/assets/img/cover-1.jpg)
+
 Hi there, I’m Dan Ryland ([@RealDanRyland](https://twitter.com/realdanryland)). Perhaps you recall my previous hackathon endeavour, [Groove AI](https://github.com/danryland/groove-ai)? Well, buckle up because I'm back for round two!
 
 If you're anything like me - a creative soul who's endlessly entertained by the ingenious world of Rick and Morty - you'll appreciate the depths of imagination that show dives into. It's the fantastic characters, intriguing worlds, and gripping storylines that always leave me awestruck.
