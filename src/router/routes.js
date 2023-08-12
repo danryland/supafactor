@@ -17,10 +17,6 @@ const routes = [
       { path: "/review/:repo_name", name: "review", component: ReviewPage },
     ],
   },
-  {
-    path: "/:userName/:repo",
-    component: BadgePage,
-  },
 
   // Always leave this as last one,
   // but you can also remove it
