@@ -2,6 +2,8 @@
 
 ## A Rick-and-Morty-Xfactor-inspired experience
 
+![Supafactor: Pass](./src/assets/img/badge-supafactor-pass.svg)
+
 [PLAY: Try Supafactor for yourself](https://supafactor.netlify.app/)
 
 WATCH: Watch a demo (Coming soon)
