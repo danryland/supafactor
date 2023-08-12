@@ -1,7 +1,6 @@
 import SignIn from "pages/SignIn.vue";
 import DashboardPage from "pages/DashboardPage.vue";
 import ReviewPage from "pages/ReviewPage.vue";
-import BadgePage from "pages/BadgePage.vue";
 
 const routes = [
   {
