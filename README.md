@@ -75,16 +75,22 @@ quasar dev
 
 ### Deploy
 
-#### Deploy the Supabase edge function
+Deploy the Supabase edge function:
 
 ```bash
 supabase functions deploy review
 ```
 
-#### Build the app for production
+Hosted on [Netlify](https://www.netlify.com/)
+
+Build the app for production
 
 ```bash
 quasar build
 ```
 
-Hosted on [Netlify](https://www.netlify.com/)
+Publish directory:
+
+```bash
+dist/spa
+```
