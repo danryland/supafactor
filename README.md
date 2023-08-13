@@ -6,7 +6,7 @@
 
 [PLAY: Try Supafactor for yourself](https://supafactor.netlify.app/)
 
-WATCH: Watch a demo (Coming soon)
+[WATCH: Watch a demo](https://www.loom.com/share/96a8588a60d948f08fd7114f5c00c885?sid=9d5430c0-473f-449e-871a-3795d3956dd6)
 
 ![Supafactor: Does your README have it?](./src/assets/img/cover-1.jpg)
 
