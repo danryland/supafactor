@@ -1,10 +1,12 @@
 <template>
-  <q-page class="flex flex-center" :class="{ 'is-ready': showBackground }">
+  <q-page
+    class="flex flex-center"
+    :class="{ 'is-ready': showBackground, 'is-result': showResult }"
+  >
     <div class="text-center">
       <h1 class="hide">Review</h1>
 
       <div v-show="isLoading">
-        <h2 class="text-h5 q-mb-lg">Collecting<br />Simon's comments...</h2>
         <ol>
           <li
             v-for="(criteria, index) in judgeCriteria"
@@ -25,6 +27,7 @@
       </div>
 
       <q-carousel
+        v-show="!showResult"
         v-if="judgeResponse && judgeResponse.comments"
         v-model="slide"
         transition-prev="scale"
@@ -93,6 +96,113 @@
           </q-carousel-slide>
         </template>
       </q-carousel>
+
+      <template v-if="showResult">
+        <template v-if="judgeResponse && judgeResponse.score >= 3">
+          <transition appear enter-active-class="animated flip slower">
+            <div class="border q-mb-md">
+              <q-avatar size="200px">
+                <img src="~/assets/img/result-pass.png" alt="Happy Ant" />
+              </q-avatar>
+            </div>
+          </transition>
+          <transition appear enter-active-class="animated tada slower">
+            <img
+              src="~/assets/img/badge-supafactor-pass.svg"
+              width="300"
+              alt="Happy Ant"
+            />
+          </transition>
+          <transition
+            appear
+            enter-active-class="animated bounceIn slower delay-3s"
+          >
+            <div>
+              <h2 class="text-h4 q-mb-md">
+                &ldquo;You did it- Congrats!&rdquo;
+              </h2>
+              <div class="link flex row items-center">
+                <span class="text-h6 q-mr-md">Badge:</span>
+                <q-input
+                  class="col-grow"
+                  standout
+                  dense
+                  rounded
+                  v-model="badgeURL"
+                />
+                <q-btn
+                  style="font-size: 12px"
+                  icon="fa-solid fa-copy"
+                  round
+                  dense
+                  flat
+                  color="primary"
+                  @click="copyURL()"
+                  class="q-ml-md"
+                >
+                  <q-tooltip
+                    anchor="bottom middle"
+                    self="top middle"
+                    :offset="[8, 8]"
+                    class="bg-dark text-body2"
+                  >
+                    Copy
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+          </transition>
+          <transition
+            appear
+            enter-active-class="animated fadeInUp slower delay-5s"
+          >
+            <q-btn
+              :to="{ name: 'dashboard' }"
+              outline
+              rounded
+              no-caps
+              label="Back to dashboard"
+            />
+          </transition>
+        </template>
+        <template v-else>
+          <transition appear enter-active-class="animated flip slower">
+            <div class="border q-mb-md">
+              <q-avatar size="200px">
+                <img src="~/assets/img/result-fail.png" alt="Joyus Ant" />
+              </q-avatar>
+            </div>
+          </transition>
+          <transition appear enter-active-class="animated tada slower">
+            <img
+              src="~/assets/img/badge-supafactor-fail.svg"
+              width="300"
+              alt="Happy Ant"
+            />
+          </transition>
+          <transition
+            appear
+            enter-active-class="animated bounceIn slower delay-3s"
+          >
+            <h2 class="text-h4">
+              &ldquo;Time to send another<br />
+              pausing email&rdquo;
+            </h2>
+          </transition>
+          <transition
+            appear
+            enter-active-class="animated fadeInUp slower delay-5s"
+          >
+            <q-btn
+              :to="{ name: 'dashboard' }"
+              outline
+              rounded
+              no-caps
+              label="Back to dashboard"
+            />
+          </transition>
+        </template>
+      </template>
     </div>
   </q-page>
 </template>
@@ -100,6 +210,9 @@
 <script>
 import { ref, getCurrentInstance, watch } from "vue";
 import { useRoute } from "vue-router";
+import { supabase } from "../lib/supabaseClient";
+import { copyToClipboard } from "quasar";
+import { Notify } from "quasar";
 
 export default {
   name: "DashboardPage",
@@ -115,6 +228,7 @@ export default {
     const axios = appContext.config.globalProperties.$axios;
     const isLoading = ref(true);
     const showBackground = ref(false);
+    const showResult = ref(false);
     const judgeCriteria = [
       { title: "Creativity", icon: "fa-regular fa-paintbrush-pencil" },
       { title: "Functionality", icon: "fa-regular fa-gears" },
@@ -123,34 +237,25 @@ export default {
     ];
     const completedIndices = ref([]);
     const judgeResponse = ref([]);
-    // const judgeResponse = ref([
-    //   {
-    //     comments: [
-    //       {
-    //         criteria: "creativity/inventiveness",
-    //         comment:
-    //           "Well, it's a bit lacking in creativity. It's a pretty standard README without any unique or inventive elements.",
-    //       },
-    //       {
-    //         criteria:
-    //           "explain how to run the application locally clearly and well and technically impressive",
-    //         comment:
-    //           "The instructions on how to run the app locally are clear and concise. Good job on that! However, it could have been more technically impressive by providing more details or examples on how to use specific Supabase features.",
-    //       },
-    //       {
-    //         criteria: "use of Supabase features",
-    //         comment:
-    //           "I'm a bit disappointed. There's no mention of any Supabase features being used in this app. It would have been great to see how the application leverages the power of Supabase.",
-    //       },
-    //       {
-    //         criteria: "fun",
-    //         comment:
-    //           "I have to say, this README is lacking in the fun department. It's a bit dry and could definitely use some personality or humor to make it more enjoyable to read.",
-    //       },
-    //     ],
-    //     score: 2,
-    //   },
-    // ]);
+    const badgeURL = ref();
+
+    const addSubmission = async () => {
+      const slug =
+        props.currentUser.user_metadata.user_name + "_" + repoName.value;
+
+      const submission = {
+        user_id: props.currentUser.id,
+        user_name: props.currentUser.user_metadata.user_name,
+        slug: slug,
+        repo: repoName.value,
+        score: judgeResponse.value.score,
+      };
+
+      const { data, error } = await supabase
+        .from("submissions")
+        .upsert(submission, { onConflict: "slug" })
+        .select();
+    };
 
     const getJudgment = async (currentUser, github) => {
       try {
@@ -182,9 +287,7 @@ export default {
           completedIndices.value = [0, 1, 2, 3];
           showBackground.value = true;
           judgeResponse.value = judge.data;
-          console.log("Judge Good");
-        } else {
-          console.log("No judge");
+          addSubmission();
         }
       } catch (error) {
         console.log(error);
@@ -207,7 +310,6 @@ export default {
         const github = await axios.get(url);
 
         if (github) {
-          console.log("Github Good");
           getJudgment(currentUser, github);
         }
       } catch (error) {
@@ -227,7 +329,34 @@ export default {
     };
 
     const viewResult = () => {
-      alert("Todo");
+      showResult.value = true;
+
+      badgeURL.value =
+        process.env.SUPABASE_FUNCTION +
+        "/v1/badge?userName=" +
+        props.currentUser.user_metadata.user_name +
+        "&repo=" +
+        repoName.value;
+
+      //console.log(judgeResponse.value.score);
+    };
+
+    const copyURL = () => {
+      copyToClipboard(badgeURL.value)
+        .then(() => {
+          Notify.create({
+            message: "Copied to clipboard",
+            position: "top",
+            icon: "fa-solid fa-circle-check",
+          });
+        })
+        .catch(() => {
+          Notify.create({
+            message: "Failed to copy to clipboard",
+            position: "top",
+            icon: "fa-solid fa-circle-x",
+          });
+        });
     };
 
     watch(
@@ -262,6 +391,9 @@ export default {
       getItemIconClass,
       getItemClass,
       viewResult,
+      showResult,
+      badgeURL,
+      copyURL,
     };
   },
 };
@@ -276,6 +408,9 @@ export default {
   background-size: contain;
   &.is-ready {
     background-position: center 40px;
+  }
+  &.is-result {
+    background-position: -500% 40px !important;
   }
 }
 .q-carousel {
@@ -346,5 +481,11 @@ li {
     color: $primary;
     text-shadow: 0px 0px 10px rgba($primary, 0.2);
   }
+}
+
+.link {
+  background: rgba($secondary, 0.9);
+  padding: 16px 24px;
+  border-radius: 50px;
 }
 </style>

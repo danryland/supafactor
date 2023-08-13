@@ -47,14 +47,14 @@
         :repos="repos"
         :formatDate="formatDate"
         :submitRepo="submitRepo"
-        :addManually="addManually"
+        :getAllRepos="getAllRepos"
       />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { ref, onMounted, getCurrentInstance } from "vue";
+import { ref, onMounted, getCurrentInstance, watch } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "../lib/supabaseClient";
 import { date } from "quasar";
@@ -120,12 +120,29 @@ export default {
         currentUser.value = user;
         getRepos();
       } else {
-        //router.push("/sign-in");
+        router.push("/sign-in");
       }
     });
 
-    const addManually = () => {
-      alert("TODO");
+    const getAllRepos = async () => {
+      isLoading.value = true;
+
+      const response = await axios.get("https://api.github.com/user/repos", {
+        headers: {
+          Authorization: `token ${oAuthToken.value}`,
+        },
+      });
+
+      //console.log(response.data);
+
+      repos.value = response.data.map((repo) => ({
+        id: repo.id,
+        name: repo.name,
+        html_url: repo.html_url,
+        created_at: repo.created_at,
+      }));
+
+      isLoading.value = false;
     };
 
     const submitRepo = (repoName) => {
@@ -148,7 +165,7 @@ export default {
       isLoading,
       selectedRepo,
       formatDate,
-      addManually,
+      getAllRepos,
       submitRepo,
     };
   },

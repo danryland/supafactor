@@ -16,12 +16,13 @@
           enter-active-class="animated bounceIn slower delay-3s"
         >
           <div>
-            <q-list
-              v-for="repo in repos"
-              v-bind:key="repo.id"
-              class="repos q-mb-lg"
-            >
-              <q-item tag="label" v-ripple>
+            <q-list class="repos q-mb-lg">
+              <q-item
+                tag="label"
+                v-ripple
+                v-for="repo in repos"
+                v-bind:key="repo.id"
+              >
                 <q-item-section avatar>
                   <q-radio
                     v-model="selectedRepo"
@@ -108,12 +109,12 @@
           enter-active-class="animated fadeInUp slower delay-5s"
         >
           <q-btn
-            @click="addManually()"
+            @click="getAllRepos()"
             outline
             rounded
             no-caps
             size="lg"
-            label="Add manually"
+            label="Get all repos"
           />
         </transition>
       </div>
@@ -142,7 +143,7 @@ export default {
       type: Function,
       required: true,
     },
-    addManually: {
+    getAllRepos: {
       type: Function,
       required: true,
     },
