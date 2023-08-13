@@ -122,8 +122,8 @@
                 &ldquo;You did it- Congrats!&rdquo;
               </h2>
               <div class="link flex row items-center">
-                <span class="text-h6 q-mr-md">Badge:</span>
                 <q-input
+                  label="Github Badge"
                   class="col-grow"
                   standout
                   dense
