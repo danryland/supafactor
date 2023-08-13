@@ -484,7 +484,7 @@ li {
 }
 
 .link {
-  background: rgba($secondary, 0.9);
+  background: $secondary;
   padding: 16px 24px;
   border-radius: 50px;
 }
