@@ -2,7 +2,7 @@
 
 ## A Rick-and-Morty-Xfactor-inspired experience
 
-![Supafactor: Pass](https://nipsfqhfvpgclfjnctna.supabase.co/functions/v1/badge?userName=danryland&repo=supafactor)&nbsp;&nbsp;[![Netlify Status](https://api.netlify.com/api/v1/badges/cbd8e5cf-b583-4f39-befb-2e56e08f1123/deploy-status)](https://app.netlify.com/sites/supafactor/deploys)
+[![Supafactor: Pass](https://nipsfqhfvpgclfjnctna.supabase.co/functions/v1/badge?userName=danryland&repo=supafactor)](https://supafactor.netlify.app/)&nbsp;&nbsp;[![Netlify Status](https://api.netlify.com/api/v1/badges/cbd8e5cf-b583-4f39-befb-2e56e08f1123/deploy-status)](https://app.netlify.com/sites/supafactor/deploys)
 
 [PLAY: Try Supafactor for yourself](https://supafactor.netlify.app/)
 
