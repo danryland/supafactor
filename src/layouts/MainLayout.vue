@@ -120,7 +120,7 @@ export default {
         currentUser.value = user;
         getRepos();
       } else {
-        router.push("/sign-in");
+        //router.push("/sign-in");
       }
     });
 
